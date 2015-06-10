@@ -1,0 +1,9 @@
+C:\Users\stan\Documents\GitHub\TLS214-Disambiguation\VS\Disambiguation\Sample\bin\Debug\Sample.dacpac
+C:\Users\stan\Documents\GitHub\TLS214-Disambiguation\VS\Disambiguation\Sample\bin\Debug\Sample.dll
+C:\Users\stan\Documents\GitHub\TLS214-Disambiguation\VS\Disambiguation\Sample\bin\Debug\Sample.pdb
+C:\Users\stan\Documents\GitHub\TLS214-Disambiguation\VS\Disambiguation\Sample\obj\Debug\Model.xml
+C:\Users\stan\Documents\GitHub\TLS214-Disambiguation\VS\Disambiguation\Sample\obj\Debug\refactor.xml
+C:\Users\stan\Documents\GitHub\TLS214-Disambiguation\VS\Disambiguation\Sample\obj\Debug\postdeploy.sql
+C:\Users\stan\Documents\GitHub\TLS214-Disambiguation\VS\Disambiguation\Sample\obj\Debug\predeploy.sql
+C:\Users\stan\Documents\GitHub\TLS214-Disambiguation\VS\Disambiguation\Sample\obj\Debug\Sample.dll
+C:\Users\stan\Documents\GitHub\TLS214-Disambiguation\VS\Disambiguation\Sample\obj\Debug\Sample.pdb
