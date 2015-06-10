@@ -67,5 +67,6 @@
     <Compile Include="LD.cs" />
     <Compile Include="LDPerc.cs" />
     <Compile Include="SpecialCharacterRemover.cs" />
+    <Compile Include="SCRTable.cs" />
   </ItemGroup>
 </Project>
