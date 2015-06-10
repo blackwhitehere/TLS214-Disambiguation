@@ -66,5 +66,6 @@
   <ItemGroup>
     <Compile Include="LD.cs" />
     <Compile Include="LDPerc.cs" />
+    <Compile Include="SpecialCharacterRemover.cs" />
   </ItemGroup>
 </Project>
