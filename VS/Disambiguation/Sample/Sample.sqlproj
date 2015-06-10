@@ -65,5 +65,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LD.cs" />
+    <Compile Include="LDPerc.cs" />
   </ItemGroup>
 </Project>
