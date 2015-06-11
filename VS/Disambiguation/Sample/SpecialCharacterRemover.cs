@@ -7,9 +7,10 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
+
 public partial class UserDefinedFunctions
 {
-    [Microsoft.SqlServer.Server.SqlFunction]
+    [SqlFunction]
     public static string SpecialCharacterRemover(string s)
     {
         Regex r = new Regex("(?:[^a-z0-9 ]|(?<=['\"])s)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
