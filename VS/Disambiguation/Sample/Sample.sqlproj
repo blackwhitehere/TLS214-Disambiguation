@@ -68,5 +68,6 @@
     <Compile Include="LDPerc.cs" />
     <Compile Include="SpecialCharacterRemover.cs" />
     <Compile Include="SumOfNum.cs" />
+    <Compile Include="GetMatches.cs" />
   </ItemGroup>
 </Project>

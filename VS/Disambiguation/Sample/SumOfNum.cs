@@ -1,10 +1,5 @@
 using System;
-using System.Data;
-using System.Data.SqlClient;
-using System.Data.SqlTypes;
 using Microsoft.SqlServer.Server;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 
 public partial class UserDefinedFunctions
