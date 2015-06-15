@@ -37,9 +37,9 @@ go
 --96160
 
 --count amount of ISSN numbers with a crude like statement
-select count(*) 
+select * 
 from sample_table as sa
-where sa.npl_biblio like '%ISSN%'
+where sa.npl_biblio like '% & JP%'
 go
 --2%
 
@@ -64,7 +64,7 @@ create fulltext catalog sample_table_catalog
 go
 
 create fulltext index on sample_table(npl_biblio)
-key index pk_npl_publn_id on sample_table_catalog
+key index pk_sample_id on sample_table_catalog
 with stoplist off, change_tracking off, no population
 go
 
@@ -77,12 +77,12 @@ go
 --count amount of XP numbers with fulltext search
 select *
 from sample_table as sa
-where contains (sa.npl_biblio, '"XP*" OR XP')
+where contains (sa.npl_biblio, '%&%')
 go
 
 select *
 from sample_table 
-where contains (npl_biblio, 'Codd')
+where contains (npl_biblio, 'note')
 go
 
 -----------------------
@@ -447,9 +447,13 @@ go
 ------------------------------------------------------------
 --TESTING -- IN PROCESS
 
+select count (*)
+from tls214_npl_publn as a
+where a.npl_publn_id<950000001
+
 ---------
 --Find Labels
-
+go
 create function fn_RE (@biblio nvarchar(max), @pattern nvarchar(max))
 returns table (match_index int, match_length int, match_value nvarchar(max))
 external name RegExp.UserDefinedFunctions.GetMatches
@@ -498,7 +502,7 @@ begin
 
 		alter table #tmp add su_id int
 		alter table #tmp add regexp_id int
-		update #tmp set su_id=@counter_tuples;
+		update #tmp set su_id=@counter_tuples; --set replace?
 		update #tmp set regexp_id=@tank_steps;
 
 		insert into RegExpSMatches (su_id, regexp_id, match_index, match_length, match_value)
