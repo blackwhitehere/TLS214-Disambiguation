@@ -194,7 +194,7 @@ go
 --pages
 insert into cleaning_patterns select 1, '% pp. %',  ' pp. ', ' pages ' --'%*pp %'
 insert into cleaning_patterns select 1, '%,pp. %',  ',pp. ', ', pages ' --'%*pp.%' 
-insert into cleaning_patterns select 1, '% page %', ' page ', ' pages '
+insert into cleaning_patterns select 1, '% page %', ' page ', ' pages ' --pg, pgs
 insert into cleaning_patterns select 1, '%,page %', ',page ', ', pages '
 insert into cleaning_patterns select 1, '%,pages %', ',pages ', ', pages '
 insert into cleaning_patterns select 1, '% page(s) %', ' page(s) ',  ' pages '
@@ -422,7 +422,7 @@ go
 select dbo.LD('sample','hellllllo')
 select dbo.LDPerc('hello','helko')
 select dbo.SCR('sample_^^^table')
-select dbo.SumOfNum('bleble9bleble 90 1 [150]4')
+select dbo.SumOfNum('bleble9bleble 90 1 [150]4 00000000000000')
 go
 
 -- Test
@@ -433,9 +433,9 @@ select npl_publn_id, npl_biblio, dbo.SCR(npl_biblio) as scr_biblio
 into #tmp1
 from sample_unique
 
-select npl_publn_id, scr_biblio, dbo.SumOfNum(scr_biblio) as NSM
+select npl_publn_id, npl_biblio, dbo.SumOfNum(npl_biblio) as NSM --scr_biblio
 into #tmp2
-from #tmp1
+from sample_unique --#tmp1
 
 select NSM, count(NSM) as freq
 from #tmp2
@@ -453,6 +453,8 @@ where a.npl_publn_id<950000001
 
 ---------
 --Find Labels
+drop function fn_RE
+
 go
 create function fn_RE (@biblio nvarchar(max), @pattern nvarchar(max))
 returns table (match_index int, match_length int, match_value nvarchar(max))

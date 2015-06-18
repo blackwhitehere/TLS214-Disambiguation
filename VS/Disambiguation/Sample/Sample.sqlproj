@@ -64,10 +64,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="LD.cs" />
-    <Compile Include="LDPerc.cs" />
+    <Compile Include="ComputeDistance.cs" />
+    <Compile Include="ComputeDistancePerc.cs" />
     <Compile Include="SpecialCharacterRemover.cs" />
     <Compile Include="SumOfNum.cs" />
     <Compile Include="GetMatches.cs" />
+    <Compile Include="SumIntDigits.cs" />
+    <Compile Include="CharacterRemover.cs" />
+    <Compile Include="IsMatchValue.cs" />
+    <Compile Include="IsMatchesValue.cs" />
+    <Compile Include="IsMatchesIndex.cs" />
+    <Compile Include="IsMatchIndex.cs" />
+    <Compile Include="IsMatch.cs" />
+    <Compile Include="IsMatchLength.cs" />
+    <Compile Include="IsMatchesLength.cs" />
+    <Compile Include="RegexSplit.cs" />
+    <Compile Include="RegexGetPart.cs" />
+    <Compile Include="RegexReplace.cs" />
   </ItemGroup>
 </Project>
