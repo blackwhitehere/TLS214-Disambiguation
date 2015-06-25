@@ -81,5 +81,6 @@
     <Compile Include="RegexSplit.cs" />
     <Compile Include="RegexGetPart.cs" />
     <Compile Include="RegexReplace.cs" />
+    <Compile Include="GetGroups.cs" />
   </ItemGroup>
 </Project>

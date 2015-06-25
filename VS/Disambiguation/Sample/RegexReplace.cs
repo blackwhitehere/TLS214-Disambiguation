@@ -10,10 +10,12 @@ using System.Text.RegularExpressions;
 public partial class UserDefinedFunctions
 {
     [Microsoft.SqlServer.Server.SqlFunction]
-    public static string RegexReplace(string input, string pattern, string replacement) //
+    public static string RegexReplace(string input, string pattern, string replacement)
     {
-        //Regex r = new Regex("(?:" + i + "|(?<=['\"])s)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
-        return Regex.Replace(input, pattern, replacement);
+        RegexOptions options = RegexOptions.CultureInvariant | RegexOptions.Compiled;
+        Regex r = new Regex(pattern, options);
+        return r.Replace(input, replacement);
         //string output = Regex.Replace(input, "N.t", "NET");
     }
+
 }

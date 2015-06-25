@@ -10,9 +10,10 @@ using System.Text.RegularExpressions;
 public partial class UserDefinedFunctions
 {
     [Microsoft.SqlServer.Server.SqlFunction]
-    public static string CharacterRemover(string i, string s)
+    public static string CharacterRemover(string input, string s)
     {
-        Regex r = new Regex("(?:" + i + "|(?<=['\"])s)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+        Regex r = new Regex("(?:" + input + "|(?<=['\"])s)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
         return r.Replace(s, String.Empty);
     }
 }
+//'|"s

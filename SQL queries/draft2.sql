@@ -1,4 +1,4 @@
-/*
+﻿/*
 General Project Page
 Data Cleansing and Disambiguation of PATSTAT TLS214 
 */
@@ -145,15 +145,18 @@ create table cleaning_patterns
 go
 
 --pages
-insert into cleaning_patterns select 1, '% pp. %',  ' pp. ', ' pages ' --'%*pp %'
-insert into cleaning_patterns select 1, '%,pp. %',  ',pp. ', ', pages ' --'%*pp.%' 
-insert into cleaning_patterns select 1, '% page %', ' page ', ' pages ' --pg, pgs
+insert into cleaning_patterns select 1, '% pp. %',  ' pp. ', ' pages '
+insert into cleaning_patterns select 1, '%,pp. %',  ',pp. ', ', pages ' 
+insert into cleaning_patterns select 1, '% page %', ' page ', ' pages '
 insert into cleaning_patterns select 1, '%,page %', ',page ', ', pages '
 insert into cleaning_patterns select 1, '%,pages %', ',pages ', ', pages '
 insert into cleaning_patterns select 1, '% page(s) %', ' page(s) ',  ' pages '
 insert into cleaning_patterns select 1, '% pages.%', ' pages.',  ' pages'
+--Ger+Fr
 insert into cleaning_patterns select 1, '% seiten %', ' seiten ', ' pages '
 insert into cleaning_patterns select 1, '% seiten.%', ' seiten.', ' pages'
+insert into cleaning_patterns select 1, '% pg. %',  ' pg. ', ' pages '
+insert into cleaning_patterns select 1, '%,pg. %',  ',pg. ', ' pages '
 insert into cleaning_patterns select 1, '% seite %', ' seite ', ' pages '
 insert into cleaning_patterns select 1, '% feuilles %', ' feuilles ', ' pages '
 
@@ -181,6 +184,7 @@ insert into cleaning_patterns select 5, '% proceedings %', ' proceedings ', ' pr
 
 --science
 insert into cleaning_patterns select 6, '% sci. %', ' sci. ', ' science '
+insert into cleaning_patterns select 6, '% Wissenschaft %', ' Wissenschaft ', ' science '
 
 --et al.
 insert into cleaning_patterns select 7, '% et al.%', ' et al.', ' et. al'
@@ -194,33 +198,51 @@ insert into cleaning_patterns select 8, '% chem %', ' chem ', ' chem. '
 insert into cleaning_patterns select 9, '% national %', ' national ', ' natl. '
 insert into cleaning_patterns select 9, '% natl %', ' natl ', ' natl. '
 
---[ - ]
+--[ - ] on single digits
 insert into cleaning_patterns select 10, '%[0-9] - [0-9]%', ' - ', '-'
 
 --months
 insert into cleaning_patterns select 11, '% jan. %', ' jan. ', ' jan ' -- is this case sensitive?
 insert into cleaning_patterns select 11, '% january %', ' january ', ' jan '
+insert into cleaning_patterns select 11, '% januer %', ' januer ', ' jan '
+insert into cleaning_patterns select 11, '% januier %', ' januier ', ' jan '
 insert into cleaning_patterns select 11, '% feb. %', ' feb. ', ' feb '
 insert into cleaning_patterns select 11, '% february %', ' february ', ' feb '
+insert into cleaning_patterns select 11, '% februar %', ' februar ', ' feb '
+insert into cleaning_patterns select 11, '% février %', ' février ', ' feb '
 insert into cleaning_patterns select 11, '% mar. %', ' mar. ', ' mar '
 insert into cleaning_patterns select 11, '% march %', ' march ', ' mar '
+insert into cleaning_patterns select 11, '% märz %', ' märz ', ' mar '
+insert into cleaning_patterns select 11, '% mars %', ' mars ', ' mar '
 insert into cleaning_patterns select 11, '% apr. %', ' apr. ', ' apr '
 insert into cleaning_patterns select 11, '% april %', ' april ', ' apr '
+insert into cleaning_patterns select 11, '% avril %', ' avril ', ' apr '
+insert into cleaning_patterns select 11, '% mai %', ' mai ', ' may '
 insert into cleaning_patterns select 11, '% jun. %', ' jun. ', ' jun '
 insert into cleaning_patterns select 11, '% june %', ' june ', ' jun '
+insert into cleaning_patterns select 11, '% juni %', ' juni ', ' jun '
+insert into cleaning_patterns select 11, '% juin %', ' juin ', ' jun '
 insert into cleaning_patterns select 11, '% jul. %', ' jul. ', ' jul '
 insert into cleaning_patterns select 11, '% july %', ' july ', ' jul '
+insert into cleaning_patterns select 11, '% juli %', ' juli ', ' jul '
+insert into cleaning_patterns select 11, '% juilliet %', ' juilliet ', ' jul '
 insert into cleaning_patterns select 11, '% aug. %', ' aug. ', ' aug '
 insert into cleaning_patterns select 11, '% augustus %', ' augustus ', ' aug '
+insert into cleaning_patterns select 11, '% août %', ' août ', ' aug '
 insert into cleaning_patterns select 11, '% sep. %', ' sep. ', ' sep '
 insert into cleaning_patterns select 11, '% sept. %', ' sept. ', ' sep '
 insert into cleaning_patterns select 11, '% september %', ' september ', ' sep '
 insert into cleaning_patterns select 11, '% oct. %', ' oct. ', ' oct '
 insert into cleaning_patterns select 11, '% october %', ' october ', ' oct '
+insert into cleaning_patterns select 11, '% oktober %', ' oktober ', ' oct '
+insert into cleaning_patterns select 11, '% octobre %', ' octobre ', ' oct '
 insert into cleaning_patterns select 11, '% nov. %', ' nov. ', ' nov '
 insert into cleaning_patterns select 11, '% november %', ' november ', ' nov '
+insert into cleaning_patterns select 11, '% novembre %', ' novembre ', ' nov '
 insert into cleaning_patterns select 11, '% dec. %', ' dec. ', ' dec '
 insert into cleaning_patterns select 11, '% december %', ' december ', ' dec '
+insert into cleaning_patterns select 11, '% dezember %', ' dezember ', ' dec '
+insert into cleaning_patterns select 11, '% décembre %', ' décembre ', ' dec '
 
 --add index
 create index idx_cleaning_patterns on cleaning_patterns(cleaning_pattern)
@@ -244,6 +266,13 @@ begin
 	set @loopcounter += 1
 end
 go
+
+--------------------
+--5 - Replace Cleaning
+--1. Remove diactrics
+
+--TODO!!!!!!!!!!!!!!!!!!!!
+
 
 
 ------------------------
