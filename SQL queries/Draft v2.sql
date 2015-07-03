@@ -1,0 +1,319 @@
+﻿/*
+General Project Page
+Data Cleansing and Disambiguation of PATSTAT TLS214 
+*/
+
+use patstat
+go
+---------------------
+-- 1. sample table:
+-- final step will replace all use of sample_table with tls214_npl_publn
+/*
+drop sample_table:
+create table sample_table (
+		npl_publn_id int identity(1,1) not null,
+		npl_biblio nvarchar(max) not null,
+		constraint pk_sample_id primary key (npl_publn_id)
+		)
+*/
+
+--load sample_table with 100'000 sample records from the original table
+if object_id('sample_table') is not null drop table sample_table 
+select * 
+into sample_table
+from patstat..tls214_npl_publn
+tablesample (5000 rows)
+
+alter table sample_table add constraint pk_sample_id primary key (npl_publn_id)
+
+--you could also take an ordered sample (will contain more variants)
+if object_id('sample_table2') is not null drop table sample_table2 
+select top 100000 *
+into sample_table2
+from patstat..tls214_npl_publn
+--maybe with where clause, for excluding certain things
+order by [npl_biblio]
+
+alter table sample_table2 add constraint pk_sample_id2 primary key (npl_publn_id)
+go
+
+
+-----------------------
+-- 4. CLEANSING
+
+-- 4.1. PRECLEANING:
+-- Step:
+
+--1
+--change to lowercase, remove leading and lagging blanks, double spaces removed
+if object_id('#tmp1') is not null drop table #tmp1
+go
+
+select npl_publn_id,
+	--lower(
+		rtrim(
+			ltrim(
+				replace(npl_biblio,'  ',' ')
+				)
+			)
+		--)
+	as npl_biblio
+into #tmp1 --1st tmp
+from sample_table
+go
+
+--2
+--if biblio ends with a dot remove the dot, else leave as is
+
+if object_id('#tmp2') is not null drop table #tmp2
+select npl_publn_id,
+	iif(
+	(substring(npl_biblio, len(npl_biblio), 1) = '.'), left(npl_biblio, len(npl_biblio) - 1), npl_biblio)
+	as npl_biblio
+into #tmp2 --2nd tmp
+from #tmp1
+
+/* -- This can be done with regular expressions
+--3
+--remove diacritics from string
+if object_id('#tmp3') is not null drop table #tmp3
+select npl_publn_id, cast([npl_biblio] as varchar(max)) collate SQL_Latin1_General_CP1253_CI_AI as npl_biblio
+into #tmp3 --3rd tmp
+from #tmp2
+go
+
+drop table #tmp2
+go
+*/
+go
+
+--4
+--remove multiple spaces
+while exists (select * from #tmp2 where (npl_biblio like '%  %'))
+begin
+  update #tmp2
+  set npl_biblio=replace(npl_biblio,'  ',' ')
+  where (npl_biblio like '%  %')
+end
+go
+
+---drop not needed temp tables
+drop table #tmp1
+--...
+go
+--------------------------
+-- 4.2 Glue Table
+--After the pre-cleaning we can work with a smaller table
+
+--Create new table to store precleaned data
+if object_id('sample_unique') is not null drop table sample_unique
+create table sample_unique(
+	npl_publn_id int identity(1,1) not null,
+	npl_biblio nvarchar(max) not null
+constraint pk_sample_unique_id primary key (npl_publn_id))
+go
+
+--Populate table with distinct values for npl_biblio
+insert into sample_unique(npl_biblio)
+select distinct npl_biblio
+from #tmp2
+order by npl_biblio
+go
+
+--Fill glue table 
+if object_id('sample_glue') is not null drop table sample_glue
+select a.npl_publn_id as npl_publn_id_new, b.npl_publn_id
+into sample_glue
+from sample_unique as a
+join #tmp2 as b on a.npl_biblio = b.npl_biblio
+go
+
+-- Drop not needed tmp table
+drop table #tmp2
+go
+
+-----------------------------------
+-- 4.3a CLEANING [PATTERNS]
+
+-- Create a table for specifing patterns for change
+if object_id('cleaning_patterns') is not null drop table cleaning_patterns
+create table cleaning_patterns
+				(step int not null,
+				cleaning_pattern varchar(100) not null,
+				cleaning_source varchar(100) not null,
+				cleaning_label varchar(100) not null)
+go
+
+--pages
+insert into cleaning_patterns select 1, '% pp. %',  ' pp. ', ' pages '
+insert into cleaning_patterns select 1, '%,pp. %',  ',pp. ', ', pages ' 
+insert into cleaning_patterns select 1, '% page %', ' page ', ' pages '
+insert into cleaning_patterns select 1, '%,page %', ',page ', ', pages '
+insert into cleaning_patterns select 1, '%,pages %', ',pages ', ', pages '
+insert into cleaning_patterns select 1, '% page(s) %', ' page(s) ',  ' pages '
+insert into cleaning_patterns select 1, '% pages.%', ' pages.',  ' pages'
+--Ger+Fr
+insert into cleaning_patterns select 1, '% seiten %', ' seiten ', ' pages '
+insert into cleaning_patterns select 1, '% seiten.%', ' seiten.', ' pages'
+insert into cleaning_patterns select 1, '% pg. %',  ' pg. ', ' pages '
+insert into cleaning_patterns select 1, '%,pg. %',  ',pg. ', ' pages '
+insert into cleaning_patterns select 1, '% seite %', ' seite ', ' pages '
+insert into cleaning_patterns select 1, '% feuilles %', ' feuilles ', ' pages '
+
+insert into cleaning_patterns select 2, '% p. [0-9]%', ' p. ', ' pages '
+insert into cleaning_patterns select 2, '%,p. [0-9]%', ',p. ', ', pages '
+
+insert into cleaning_patterns select 3, '% bd. %', ' bd. ' ,' vol '
+insert into cleaning_patterns select 3, '% vol. %',' vol. ',' vol '
+insert into cleaning_patterns select 3, '%,vol. %',',vol. ',', vol '
+insert into cleaning_patterns select 3, '% v. [0-9]%',' v. ',' vol '
+insert into cleaning_patterns select 3, '% volume [0-9]%',' volume ',' vol '
+insert into cleaning_patterns select 3, '% b. [0-9]%', ' b. ', ' vol '
+
+--issue
+insert into cleaning_patterns select 4, '% no. %', ' no. ', ' no ' --add Number, Issue, Numbers, No.
+insert into cleaning_patterns select 4, '%,no. %', ',no. ', ', no '
+insert into cleaning_patterns select 4, '% nr. %', ' nr. ',' no '
+insert into cleaning_patterns select 4, '%,nr. %', ',nr. ',', no '
+insert into cleaning_patterns select 4, '% n. [0-9]%', ' n. ', ' no '
+insert into cleaning_patterns select 4, '% heft %', ' heft ',' no '
+
+--proceedings
+insert into cleaning_patterns select 5, '% proc. %', ' proc. ', ' proc '
+insert into cleaning_patterns select 5, '% proceedings %', ' proceedings ', ' proc '
+
+--science
+insert into cleaning_patterns select 6, '% sci. %', ' sci. ', ' science '
+insert into cleaning_patterns select 6, '% Wissenschaft %', ' Wissenschaft ', ' science '
+
+--et al.
+insert into cleaning_patterns select 7, '% et al.%', ' et al.', ' et. al'
+insert into cleaning_patterns select 7, '% et. al.%', ' et. al.', ' et. al'
+
+--chemical
+insert into cleaning_patterns select 8, '% chemical %', ' chemical ', ' chem. '
+insert into cleaning_patterns select 8, '% chem %', ' chem ', ' chem. '
+
+--national
+insert into cleaning_patterns select 9, '% national %', ' national ', ' natl. '
+insert into cleaning_patterns select 9, '% natl %', ' natl ', ' natl. '
+
+--[ - ] on single digits
+insert into cleaning_patterns select 10, '%[0-9] - [0-9]%', ' - ', '-'
+
+--months
+insert into cleaning_patterns select 11, '% jan. %', ' jan. ', ' jan ' -- is this case sensitive?
+insert into cleaning_patterns select 11, '% january %', ' january ', ' jan '
+insert into cleaning_patterns select 11, '% januer %', ' januer ', ' jan '
+insert into cleaning_patterns select 11, '% januier %', ' januier ', ' jan '
+insert into cleaning_patterns select 11, '% feb. %', ' feb. ', ' feb '
+insert into cleaning_patterns select 11, '% february %', ' february ', ' feb '
+insert into cleaning_patterns select 11, '% februar %', ' februar ', ' feb '
+insert into cleaning_patterns select 11, '% février %', ' février ', ' feb '
+insert into cleaning_patterns select 11, '% mar. %', ' mar. ', ' mar '
+insert into cleaning_patterns select 11, '% march %', ' march ', ' mar '
+insert into cleaning_patterns select 11, '% märz %', ' märz ', ' mar '
+insert into cleaning_patterns select 11, '% mars %', ' mars ', ' mar '
+insert into cleaning_patterns select 11, '% apr. %', ' apr. ', ' apr '
+insert into cleaning_patterns select 11, '% april %', ' april ', ' apr '
+insert into cleaning_patterns select 11, '% avril %', ' avril ', ' apr '
+insert into cleaning_patterns select 11, '% mai %', ' mai ', ' may '
+insert into cleaning_patterns select 11, '% jun. %', ' jun. ', ' jun '
+insert into cleaning_patterns select 11, '% june %', ' june ', ' jun '
+insert into cleaning_patterns select 11, '% juni %', ' juni ', ' jun '
+insert into cleaning_patterns select 11, '% juin %', ' juin ', ' jun '
+insert into cleaning_patterns select 11, '% jul. %', ' jul. ', ' jul '
+insert into cleaning_patterns select 11, '% july %', ' july ', ' jul '
+insert into cleaning_patterns select 11, '% juli %', ' juli ', ' jul '
+insert into cleaning_patterns select 11, '% juilliet %', ' juilliet ', ' jul '
+insert into cleaning_patterns select 11, '% aug. %', ' aug. ', ' aug '
+insert into cleaning_patterns select 11, '% augustus %', ' augustus ', ' aug '
+insert into cleaning_patterns select 11, '% août %', ' août ', ' aug '
+insert into cleaning_patterns select 11, '% sep. %', ' sep. ', ' sep '
+insert into cleaning_patterns select 11, '% sept. %', ' sept. ', ' sep '
+insert into cleaning_patterns select 11, '% september %', ' september ', ' sep '
+insert into cleaning_patterns select 11, '% oct. %', ' oct. ', ' oct '
+insert into cleaning_patterns select 11, '% october %', ' october ', ' oct '
+insert into cleaning_patterns select 11, '% oktober %', ' oktober ', ' oct '
+insert into cleaning_patterns select 11, '% octobre %', ' octobre ', ' oct '
+insert into cleaning_patterns select 11, '% nov. %', ' nov. ', ' nov '
+insert into cleaning_patterns select 11, '% november %', ' november ', ' nov '
+insert into cleaning_patterns select 11, '% novembre %', ' novembre ', ' nov '
+insert into cleaning_patterns select 11, '% dec. %', ' dec. ', ' dec '
+insert into cleaning_patterns select 11, '% december %', ' december ', ' dec '
+insert into cleaning_patterns select 11, '% dezember %', ' dezember ', ' dec '
+insert into cleaning_patterns select 11, '% décembre %', ' décembre ', ' dec '
+
+--add index
+create index idx_cleaning_patterns on cleaning_patterns(cleaning_pattern)
+
+-------------------
+-- 4.3b Execute the changes specified in the cleaning table
+
+--initialization
+declare @loopcounter int = 1
+declare @loopmax int = (select max(step) from cleaning_patterns)
+
+--loop - if a pattern is found on a step, replace it
+while (@loopcounter <= @loopmax)
+begin
+    
+	update a
+	set a.npl_biblio = replace(a.npl_biblio, b.cleaning_source, b.cleaning_label) -- replace biblio's substring with its label 
+	from sample_unique as a
+	join cleaning_patterns as b on patindex(b.cleaning_pattern, a.npl_biblio) <> 0 --provided a pattern is found
+	where step = @loopcounter
+	set @loopcounter += 1
+end
+go
+
+--------------------
+--5 - Replace Cleaning
+--1. Remove diactrics
+
+--TODO!!!!!!!!!!!!!!!!!!!!
+
+
+
+------------------------
+--StripCharacters function test
+
+-- Outputs numeric, alphabetic and alphanumeric characters only
+if object_id('#tmp') is not null drop table #tmp
+go
+
+select top 10000 npl_publn_id, npl_biblio, 
+           dbo.fn_StripCharacters(npl_biblio, '^a-z0-9') as bib_alphanumeric,
+		   dbo.fn_StripCharacters(npl_biblio, '^0-9') as bib_numeric,
+		   dbo.fn_StripCharacters(npl_biblio, '^a-z') as bib_alphabetic
+into #tmp
+from sample_unique
+go
+
+select * from #tmp
+
+--Special Character Remover Test
+if object_id('#tmp1') is not null drop table #tmp1
+go
+
+select npl_publn_id, npl_biblio, dbo.SCR(npl_biblio) as scr_biblio
+into #tmp1
+from sample_unique
+
+select npl_publn_id, scr_biblio, dbo.SumOfNum(scr_biblio) as NSM
+into #tmp2
+from #tmp1
+
+select NSM, count(NSM) as freq
+from #tmp2
+group by NSM
+order by freq desc
+go
+
+
+------------------------------------------------------------
+--TESTING -- IN PROCESS
+
+---------
+--Find Labels
+

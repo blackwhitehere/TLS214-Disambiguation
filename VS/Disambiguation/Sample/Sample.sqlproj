@@ -57,6 +57,7 @@
   <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
   <ItemGroup>
     <Folder Include="Properties" />
+    <Folder Include="RegExpFunctions" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -68,19 +69,24 @@
     <Compile Include="ComputeDistancePerc.cs" />
     <Compile Include="SpecialCharacterRemover.cs" />
     <Compile Include="SumOfNum.cs" />
-    <Compile Include="GetMatches.cs" />
     <Compile Include="SumIntDigits.cs" />
     <Compile Include="CharacterRemover.cs" />
-    <Compile Include="IsMatchValue.cs" />
-    <Compile Include="IsMatchesValue.cs" />
-    <Compile Include="IsMatchesIndex.cs" />
-    <Compile Include="IsMatchIndex.cs" />
-    <Compile Include="IsMatch.cs" />
-    <Compile Include="IsMatchLength.cs" />
-    <Compile Include="IsMatchesLength.cs" />
-    <Compile Include="RegexSplit.cs" />
-    <Compile Include="RegexGetPart.cs" />
-    <Compile Include="RegexReplace.cs" />
-    <Compile Include="GetGroups.cs" />
+    <Compile Include="SqlStoredProcedure2.cs" />
+    <Compile Include="RegExpFunctions\GetGroups.cs" />
+    <Compile Include="RegExpFunctions\GetMatches.cs" />
+    <Compile Include="RegExpFunctions\GetMatchesCount.cs" />
+    <Compile Include="RegExpFunctions\IsMatch.cs" />
+    <Compile Include="RegExpFunctions\IsMatchesIndex.cs" />
+    <Compile Include="RegExpFunctions\IsMatchesLength.cs" />
+    <Compile Include="RegExpFunctions\IsMatchesValue.cs" />
+    <Compile Include="RegExpFunctions\IsMatchLength.cs" />
+    <Compile Include="RegExpFunctions\IsMatchIndex.cs" />
+    <Compile Include="RegExpFunctions\IsMatchValue.cs" />
+    <Compile Include="RegExpFunctions\RegexGetPart.cs" />
+    <Compile Include="RegExpFunctions\RegexReplace.cs" />
+    <Compile Include="RegExpFunctions\RegexSplit.cs" />
+    <Compile Include="ConnectedPubSetSearcher.cs" />
+    <Compile Include="StringLength.cs" />
+    <Compile Include="RegExpFunctions\GetMatchesCSV.cs" />
   </ItemGroup>
 </Project>
