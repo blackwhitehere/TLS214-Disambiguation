@@ -12,7 +12,7 @@ public partial class UserDefinedFunctions
     [Microsoft.SqlServer.Server.SqlFunction]
     public static int GetMatchesCount(string input, string pattern)
     {
-        MatchCollection matches = Regex.Matches(input, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+        MatchCollection matches = Regex.Matches(input, pattern, RegexOptions.CultureInvariant | RegexOptions.Compiled);
         int count = 0;
         foreach (Match match in matches)
         {

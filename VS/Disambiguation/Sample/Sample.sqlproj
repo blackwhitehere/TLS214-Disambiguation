@@ -58,6 +58,8 @@
   <ItemGroup>
     <Folder Include="Properties" />
     <Folder Include="RegExpFunctions" />
+    <Folder Include="Other functions" />
+    <Folder Include="Clustering" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -65,13 +67,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ComputeDistance.cs" />
-    <Compile Include="ComputeDistancePerc.cs" />
-    <Compile Include="SpecialCharacterRemover.cs" />
-    <Compile Include="SumOfNum.cs" />
-    <Compile Include="SumIntDigits.cs" />
-    <Compile Include="CharacterRemover.cs" />
-    <Compile Include="SqlStoredProcedure2.cs" />
     <Compile Include="RegExpFunctions\GetGroups.cs" />
     <Compile Include="RegExpFunctions\GetMatches.cs" />
     <Compile Include="RegExpFunctions\GetMatchesCount.cs" />
@@ -85,8 +80,19 @@
     <Compile Include="RegExpFunctions\RegexGetPart.cs" />
     <Compile Include="RegExpFunctions\RegexReplace.cs" />
     <Compile Include="RegExpFunctions\RegexSplit.cs" />
-    <Compile Include="ConnectedPubSetSearcher.cs" />
-    <Compile Include="StringLength.cs" />
     <Compile Include="RegExpFunctions\GetMatchesCSV.cs" />
+    <Compile Include="Other functions\SumOfNum.cs" />
+    <Compile Include="Other functions\SumIntDigits.cs" />
+    <Compile Include="Other functions\StringLength.cs" />
+    <Compile Include="Other functions\ComputeDistance.cs" />
+    <Compile Include="Clustering\ConnectedPubSetSearcher.cs" />
+    <Compile Include="Clustering\SqlStoredProcedure2.cs" />
+    <Compile Include="Clustering\SqlStoredProcedure1.cs" />
+    <Compile Include="Clustering\StoredProcedures.cs" />
+    <Compile Include="Other functions\RemoveDiacritics2.cs" />
+    <Compile Include="RemoveDiactritics.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Other functions\ComputeDistancePerc.cs" />
   </ItemGroup>
 </Project>

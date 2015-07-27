@@ -13,8 +13,7 @@ public partial class UserDefinedFunctions
     public static string RegexReplace(string input, string pattern, string replacement)
     {
         RegexOptions options = RegexOptions.CultureInvariant | RegexOptions.Compiled;
-        Regex r = new Regex(pattern, options);
-        return r.Replace(input, replacement);
+        return Regex.Replace(input, pattern, replacement, options);
         //string output = Regex.Replace(input, "N.t", "NET");
     }
 

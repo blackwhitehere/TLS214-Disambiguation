@@ -12,7 +12,7 @@ public partial class UserDefinedFunctions
     [Microsoft.SqlServer.Server.SqlFunction]
     public static bool IsMatch(string input, string pattern)
     {
-        Match match = Regex.Match(input, pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+        Match match = Regex.Match(input, pattern, RegexOptions.CultureInvariant | RegexOptions.Compiled);
         // Here we check the Match instance
         if (match.Success)
         {
