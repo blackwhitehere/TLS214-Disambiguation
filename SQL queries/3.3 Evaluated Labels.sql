@@ -91,7 +91,7 @@ create table evaluated_patterns
 	,bib_alphabetic nvarchar(3000)
 	,bib_alphanumeric nvarchar(3000)
 	,b_length int
-	,sum_of_numbers int
+	,sum_of_numbers bigint
 	,count_of_numbers int
 	--name
 	,aetal nvarchar(500)

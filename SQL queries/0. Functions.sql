@@ -253,6 +253,7 @@ RETURNS nvarchar(max)
 AS EXTERNAL NAME RegExp.UserDefinedFunctions.RemoveDiacritics2
 go
 
+
 --F22 - RemoveDiacritics
 
 CREATE FUNCTION RemoveDiacritics (@input nvarchar(max))
@@ -270,7 +271,8 @@ go
 
 select dbo.ComputeDistance('testsample','sampletest') as ComputeDistance
 select dbo.ComputeDistancePerc('JA Smith','J Smith') as ComputeDistancePerc
-select dbo.SumOfNum('bleble9bleble 90 1 [150]4') as SumOfNum
+select dbo.SumOfNum('dez beckh elektronische patientenuberwachungin funktechnik 1973 no 1 vol 28 s15 uff') as SumOfNum
+select dbo.SumIntDigits('11') as sumint
 select dbo.RegexGetPart('ble, blo, be', ',', 1) as RegexGetPart
 select dbo.GetGroups('blelble 02/03/2012 blelel', '(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.]((19|20)[0-9]{2})', 2) as GetGroups
 select dbo.RegexSplit('blelble 02/03/2012 blelel', '0[1-9]|[12][0-9]|3[01](-|/|.)0[1-9]|1[012](-|/|.)(19|20)[0-9]{2}') as RegexSplit
@@ -288,7 +290,7 @@ select dbo.IsMatch('55 ghghg 7 ghghgh','55') as IsMatch
 select dbo.IsMatchesValue('55 ghghg 7 55 ghghgh','55', 1) as IsMatchesValue
 select dbo.IsMatchesIndex('55 ghghg 7 55 ghghgh','55', 1) as IsMatchesIndex
 select dbo.IsMatchesLength('55 ghghg 7 55 ghghgh','55', 1) as IsMatchesLength
-select dbo.RemoveDiacritics2('œ') as RemoveDiacritics2
+select dbo.RemoveDiacritics2('œä') as RemoveDiacritics2
 select dbo.RemoveDiacritics('œä') as RemoveDiacritics
 
 select dbo.RegexReplace('b          b  b','\s{2,}',' ') as single_space

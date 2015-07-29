@@ -91,9 +91,19 @@ if object_id('sample_unique') is not null drop table sample_unique
 create table sample_unique
 	(
 	new_id int identity(1,1) not null
-	,npl_biblio nvarchar(max) not null
+	,npl_biblio nvarchar(3100) not null
 	constraint pk_sample_unique_id primary key (new_id)
 	)
+go
+
+
+--Create an index on npl_biblio
+
+IF EXISTS (SELECT name FROM sys.indexes
+            WHERE name = N'index_sample_unique_npl_biblio')
+    DROP INDEX index_sample_unique_npl_biblio ON tls214_npl_publn;
+GO
+create index index_sample_table_npl_biblio on tls214_npl_publn (npl_biblio) online = on
 go
 
 --Populate table with distinct values of npl_biblio

@@ -23,7 +23,7 @@ go
 insert into cleaning_patterns select 1, ';', ',',''
 --pages
 insert into cleaning_patterns select 2, '(?i)((?<=\b)(((p(p\.?|gs?)\.?)|page\(?s?\)?\.?)(?=\s?\d+))|((?<=\b)(seiten?\.?)(?=\s?\d+)))|(((?<=\d+\s?)(((p(p\.?|gs?)\.?)|page\(?s?\)?\.?)(?=\b))|((?<=\d+\s?)(seiten?\.?)(?=\b))))', 'pages',''
-insert into cleaning_patterns select 3, '(?i)(?<=\s|,)(p\.?(?=(\s?\d+(\s|-))))', ' pages ',''
+insert into cleaning_patterns select 3, '(?i)(?<=\s|,)(p\.?(?=(\s?\d+(\b|[-,./]))))', ' pages ',''
 
 --volume
 insert into cleaning_patterns select 4, '(?i)((?<=\b)((v(ol)?\.?(olume(s|n)?)?|bd?\.?|tome)(?=\s?\d+)))|((?<=\d+\s?)((v(ol)?\.?(olume(s|n)?)?|bd?\.?|tome)(?=\s?,)))', ' vol ',''

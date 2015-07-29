@@ -90,7 +90,7 @@
     <Compile Include="Clustering\SqlStoredProcedure1.cs" />
     <Compile Include="Clustering\StoredProcedures.cs" />
     <Compile Include="Other functions\RemoveDiacritics2.cs" />
-    <Compile Include="RemoveDiactritics.cs" />
+    <Compile Include="Other functions\RemoveDiacritics.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Other functions\ComputeDistancePerc.cs" />

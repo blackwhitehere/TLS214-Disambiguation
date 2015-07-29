@@ -288,7 +288,7 @@ if object_id('publn_pairs_AB') is not null drop table publn_pairs_AB
 go
 
 --Neg rule vars
-declare @threshold int = 5--That is a minial score a double b rule can achive. --14 is approx threshold if no other rules are used.
+declare @threshold int = 14  --14 is approx threshold if no other rules are used.
 declare @neg_pairs_pass_points int = 15 -- it gets added to the last used neg_pair_pass_points
 --Score points
 declare @score_N1 int = 9

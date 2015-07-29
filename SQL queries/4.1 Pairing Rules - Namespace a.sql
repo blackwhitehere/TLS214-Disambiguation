@@ -16,7 +16,7 @@ Commented rules are valid, but are omitted due to performance issues or their hi
 ----------------
 --Negative rules
 ----------------
-
+/*
 if object_id('rule_A') is not null drop table rule_A
 select distinct a.new_id as new_id1, b.new_id as new_id2
 into rule_A
@@ -28,6 +28,7 @@ join evaluated_patterns as b on
 	--or b.useless2 is not null ??
 where a.new_id < b.new_id
 go
+*/
 
 /*
 select count(*) as count_ruleA
@@ -341,7 +342,6 @@ join evaluated_patterns as b on
 where a.new_id < b.new_id
 go
 
-/*
 --N3aW5a
 if object_id('rule_N3aW5a') is not null drop table rule_N3aW5a
 select distinct a.new_id as new_id1, b.new_id as new_id2
@@ -357,7 +357,7 @@ join evaluated_patterns as b on
 	and a.residual=b.residual
 where a.new_id < b.new_id
 go
-*/
+
 
 /*
 --N3aW5b !!!
@@ -437,7 +437,7 @@ go
 
 ------------------------------------------
 --Weak N4 + Strong: W1a, W2a & Middle: W3a
-
+/*
 --N4W1a
 if object_id('rule_N4W1a') is not null drop table rule_N4W1a
 select distinct a.new_id as new_id1, b.new_id as new_id2
@@ -451,6 +451,7 @@ join evaluated_patterns as b on
 	and a.bib_alphabetic=b.bib_alphabetic
 where a.new_id < b.new_id
 go
+*/
 
 --N4W2a
 if object_id('rule_N4W2a') is not null drop table rule_N4W2a
@@ -508,13 +509,16 @@ declare @score_W4 int = 3
 declare @score_W5a int = 2
 declare @score_W5b int = 1
 
+declare @pages_bonus int = 2
+declare @bib_alphanumeric_bonus int = 3
+
 select a.new_id1, a.new_id2, score = sum(a.score) 
 into pairs_tmp
 from 
 (
 	select new_id1, new_id2, (-(@neg_pairs_pass_points-@threshold)) as score from rule_A
 	union all
-	select new_id1, new_id2, (@score_N1+@score_W1a+3) as score from rule_N1W1a --+3p bonus for preserving order of numbers and words
+	select new_id1, new_id2, (@score_N1+@score_W1a+@bib_alphanumeric_bonus) as score from rule_N1W1a
 	union all
 	select new_id1, new_id2, (@score_N1+@score_W2a) as score from rule_N1W2a
 	union all
@@ -524,7 +528,7 @@ from
 	union all
 	--select new_id1, new_id2, (@score_N1+@score_W5a) as score from rule_N1W5a
 	--union all
-	select new_id1, new_id2, (@score_N2+2) as score from rule_N2_pages --+2p for pages_start and pages_end
+	select new_id1, new_id2, (@score_N2+@pages_bonus) as score from rule_N2_pages
 	union all
 	--select new_id1, new_id2, (@score_N2+@score_W1a) as score from rule_N2W1a
 	--union all
@@ -550,8 +554,8 @@ from
 	union all
 	select new_id1, new_id2, (@score_N3a+@score_W4) as score from rule_N3aW4
 	union all
-	--select new_id1, new_id2, (@score_N3a+@score_W5a) as score from rule_N3aW5a
-	--union all13
+	select new_id1, new_id2, (@score_N3a+@score_W5a) as score from rule_N3aW5a
+	union all
 	--select new_id1, new_id2, (@score_N3a+@score_W5b) as score from rule_N3aW5b
 	--union all
 	select new_id1, new_id2, (@score_N3b+@score_W1a) as score from rule_N3bW1a
@@ -560,8 +564,8 @@ from
 	union all
 	select new_id1, new_id2, (@score_N3b+@score_W3a) as score from rule_N3bW3a
 	union all
-	select new_id1, new_id2, (@score_N4+@score_W1a) as score from rule_N4W1a
-	union all
+	--select new_id1, new_id2, (@score_N4+@score_W1a) as score from rule_N4W1a --too liberal, many records have the same syntax, different numbers
+	--union all
 	select new_id1, new_id2, (@score_N4+@score_W2a) as score from rule_N4W2a
 	union all
 	select new_id1, new_id2, (@score_N4+@score_W3a) as score from rule_N4W3a
@@ -584,7 +588,7 @@ go
 --Inspect
 ---------
 
-select a.new_id1, d.npl_biblio, a.new_id2, e.npl_biblio, a.score
+select a.new_id1, d.npl_biblio as npl_biblio1, a.new_id2, e.npl_biblio as npl_biblio2, a.score
 from publn_pairs_A as a
 join sample_glue	as b on a.new_id1 = b.new_id
 join sample_glue	as c on a.new_id2 = c.new_id

@@ -8,8 +8,15 @@ go
 -------------------------------------------------
 
 --FULLTEXT
+
+if object_id('tls214_npl_publn') is not null drop fulltext index on tls214_npl_publn
 if object_id('sample_unique') is not null drop fulltext index on sample_unique
 if object_id('sample_table') is not null drop fulltext index on sample_table
+go
+
+create fulltext index on tls214_npl_publn(npl_biblio)
+key index pk_npl_publn_id on sample_table_catalog
+with stoplist off, change_tracking off, no population
 go
 
 create fulltext index on sample_unique(npl_biblio)
@@ -18,8 +25,13 @@ with stoplist off, change_tracking off, no population
 go
 
 create fulltext index on sample_table(npl_biblio)
-key index pk_sample_id on sample_table_catalog
+key index pk_sample_table_id on sample_table_catalog
 with stoplist off, change_tracking off, no population
+go
+
+--turn the index on tls214_npl_publn
+alter fulltext index on tls214_npl_publn
+start full population
 go
 
 --turn the index on sample_unique
@@ -31,6 +43,9 @@ go
 alter fulltext index on sample_table
 start full population
 go
+
+
+select count(*) from tls214_npl_publn as a where contains (a.npl_biblio, '"et al"')
 
 /*
 --Test fulltext:
@@ -386,13 +401,13 @@ select count(*) as rule_N3bW1a
 from rule_N3bW1a
 go
 select count(*) as rule_N3bW1b
-from rule_N3aW1a
+from rule_N3bW1b
 go
 select count(*) as rule_N3bW2a
 from rule_N3bW2a
 go
 select count(*) as rule_N3bW2b
-from rule_N3aW1b
+from rule_N3bW2b
 go
 select count(*) as rule_N3bW3a
 from rule_N3bW3a
@@ -468,7 +483,7 @@ select count(*) as publn_pairs_AB
 from publn_pairs_AB
 go
 select count(*) as publn_pairs_AB3x
-from publn_pairs_AB
+from publn_pairs_AB3x
 go
 
 -----------------
@@ -501,25 +516,46 @@ order by cluster_density, freq
 select sum(cluster_density)
 from #tmp_freq2
 go
+
 -----------
 --XP number
 -----------
 
-select a.new_id, b.npl_publn_id, a.xp_number, a.easy_xp, c.npl_biblio, dbo.IsMatchValue(c.npl_biblio,'XP(\s|:)?(:|-)?(\s?)(\d){4,9}\b') as xp_check
+select count(*) from tls214_extracted_patterns where easy_xp is not null
+--5651
+
+select a.new_id, c.npl_publn_id, c.npl_biblio, dbo.IsMatchValue(c.npl_biblio,'XP(\s|:)?(:|-)?(\s?)(\d){4,9}\b') as xp_check
 into #tmp1
 from tls214_extracted_patterns as a
 join sample_glue as b on a.new_id=b.new_id
 join sample_table as c on b.npl_publn_id=c.npl_publn_id
-where a.xp_number is not null
-and c.npl_publn_id<950000000
---5690 - all xps from ids
---5651 - all xps from mining
---69 missing
+where dbo.IsMatch(c.npl_biblio,'XP(\s|:)?(:|-)?(\s?)(\d){4,9}\b') <> 0
 go
 
-select * from #tmp1 where xp_number!=npl_publn_id
---5606/5621 -- 15 mistakes of npl_publn id
+select * from #tmp1 where npl_publn_id<950000001
+--5689
 go
 
+select * into #tmp2 from #tmp1 where xp_check is not null
+--5721
+go
+
+select * into #tmp3 from #tmp1 where npl_publn_id<950000001 and xp_check is not null
+--5689
+
+select * from #tmp2 except (select * from #tmp3)
+--32
+
+select *, dbo.RegexReplace(a.xp_check, '[^0-9]','') as xp_check2
+into #tmp4
+from #tmp3 as a
+go
+
+select * from #tmp4 where xp_check2!=npl_publn_id
+--15
+go
 drop table #tmp1
+drop table #tmp2
+drop table #tmp3
+drop table #tmp4
 go

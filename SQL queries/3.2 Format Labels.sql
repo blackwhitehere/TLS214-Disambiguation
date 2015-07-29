@@ -49,8 +49,8 @@ insert into extraction_patterns_format select 24, 'easy_url',	'\b(?<=((https?|ft
 --String
 insert into extraction_patterns_format select 99,	's_start',					'^(.){8}'
 insert into extraction_patterns_format select 100,	's_end',					'(.){8}$'
-insert into extraction_patterns_format select 101,	'bib_numeric',				'[^0-9]+'
-insert into extraction_patterns_format select 102,	'bib_alphabetic',			'[^A-z ]+'
+insert into extraction_patterns_format select 101,	'bib_numeric',				'[^0-9\s]'
+insert into extraction_patterns_format select 102,	'bib_alphabetic',			'[^A-z\s]+'
 insert into extraction_patterns_format select 103,	'bib_alphanumeric',			'[^A-z0-9 ]+'
 insert into extraction_patterns_format select 104,	'npl_biblio_length',		''
 insert into extraction_patterns_format select 105,	'sum_of_numbers',			''
@@ -300,7 +300,7 @@ update	a
 set		a.sum_of_numbers  = b.sum_of_numbers
 from	tls214_extracted_patterns as a
 join	(
-		select new_id, dbo.SumIntDigits(bib_numeric) as sum_of_numbers
+		select new_id, dbo.SumOfNum(bib_alphanumeric) as sum_of_numbers
 		from tls214_extracted_patterns
 		where bib_numeric is not null
 		)
@@ -313,9 +313,9 @@ update	a
 set		a.count_of_numbers  = b.count_of_numbers
 from	tls214_extracted_patterns as a
 join	(
-		select new_id, len(bib_numeric) as count_of_numbers
+		select new_id, dbo.GetMatchesCount(bib_alphanumeric,'[0-9]+') as count_of_numbers
 		from tls214_extracted_patterns
-		where len(bib_numeric)> 0
+		where bib_numeric is not null
 		)
 		as b on a.new_id = b.new_id
 go
